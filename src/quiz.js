@@ -1,50 +1,99 @@
 class Quiz {
-    // YOUR CODE HERE:
-    //
-    // 1. constructor (questions, timeLimit, timeRemaining)
-    constructor (questions, timeLimit, timeRemaining){
-      this.questions =questions;
-      this.timeLimit = timeLimit;
-      this.timeRemaining =timeRemaining;
-      this.correctAnswers = 0;
-      this.currentQuestionIndex = 0;
-    }
+  constructor(questions, timeLimit, timeRemaining) {
+    this.questions = questions;
+    this.timeLimit = timeLimit;
+    this.timeRemaining = timeRemaining;
+    this.correctAnswers = 0;
+    this.currentQuestionIndex = 0;
+  }
 
-    // 2. getQuestion()
-    getQuestion(){
-      return this.questions[this.currentQuestionIndex];
-    }
+  getQuestion() {
+    return this.questions[this.currentQuestionIndex];
+  }
 
-    // 3. moveToNextQuestion()
-    moveToNextQuestion(){
-      if (this.currentQuestionIndex < this.questions.length -1){
-        this.currentQuestionIndex++;
+  moveToNextQuestion() {
+    this.currentQuestionIndex++;
+  }
+
+  shuffleQuestions() {
+    let currentIndex = this.questions.length;
+    while (currentIndex !== 0) {
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      let temp = this.questions[currentIndex];
+      this.questions[currentIndex] = this.questions[randomIndex];
+      this.questions[randomIndex] = temp;
+    }
+    return this.questions;
+  }
+
+  checkAnswer(answer) {
+    this.getQuestion().answer === answer ? this.correctAnswers++ : null;
+  }
+
+  hasEnded() {
+    return this.currentQuestionIndex === this.questions.length;
+  }
+
+  filterQuestionsByDifficulty(difficulty) {
+    difficulty > 0 && difficulty <= 3
+      ? (this.questions = this.questions.filter(
+          (question) => question.difficulty === difficulty
+        ))
+      : "Invalid difficulty level";
+  }
+
+  averageDifficulty() {
+    return (
+      this.questions
+        .reduce((acc, question) => acc + question.difficulty, 0)
+        .toFixed(1) / this.questions.length
+    );
+  }
+
+  startTimer() {
+    const timer = setInterval(() => {
+      if (this.timeRemaining === 0) {
+        this.stopTimer();
+        this.hasEnded();
+      } else {
+        this.timeRemaining--;
       }
-    }
+    }, 1000);
+  }
 
-    // 4. shuffleQuestions()
-    shuffleQuestions(){
-      for (let i = this.questions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [this.questions[i], this.questions[j]] = [this.questions[j], this.questions[i]];
-     }
-    }
-
-    // 5. checkAnswer(answer)
-    checkAnswer(answer){
-      const correctQuestion = this.getQuestion();
-      if (correctQuestion.answer === answer){
-        this.correctAnswers++;
-        return true;
-      }
-      return false;
-    }
-
-
-    // 6. hasEnded()
-    hasEnded() {
-    return this.currentQuestionIndex >= this.questions.length || this.timeRemaining <= 0;
+  stopTimer() {
+    clearInterval(timer);
   }
 }
 
-console.log("dddd");
+const questions = [
+  {
+    text: "Question 1",
+    choices: ["a", "b", "c"],
+    answer: "a",
+    difficulty: 1,
+  },
+  {
+    text: "Question 2",
+    choices: ["d", "e", "f"],
+    answer: "d",
+    difficulty: 2,
+  },
+  {
+    text: "Question 3",
+    choices: ["g", "h", "i"],
+    answer: "g",
+    difficulty: 2,
+  },
+  {
+    text: "Question 4",
+    choices: ["j", "k", "l"],
+    answer: "j",
+    difficulty: 3,
+  },
+];
+
+// Create a new Quiz instance object
+const quiz = new Quiz(questions, 60, 100);
